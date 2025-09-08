@@ -126,7 +126,7 @@ def run(model: str, num_poses: int,
         if (output_segmentation_masks and DETECTION_RESULT):
             if DETECTION_RESULT.segmentation_masks is not None:
                 segmentation_mask = DETECTION_RESULT.segmentation_masks[0].numpy_view()
-                mask_image = np.zeros(image.shape, dtype=np.uint8)
+                mask_image = np.zeros(frame.shape, dtype=np.uint8)
                 mask_image[:] = mask_color
                 condition = np.stack((segmentation_mask,) * 3, axis=-1) > 0.1
                 visualized_mask = np.where(condition, mask_image, current_frame)
@@ -141,7 +141,6 @@ def run(model: str, num_poses: int,
             break
 
     detector.close()
-    cap.release()
     cv2.destroyAllWindows()
 
 
@@ -182,10 +181,6 @@ def main():
              'mask.',
         required=False,
         action='store_true')
-    # Finding the camera ID can be very reliant on platform-dependent methods.
-    # One common approach is to use the fact that camera IDs are usually indexed sequentially by the OS, starting from 0.
-    # Here, we use OpenCV and create a VideoCapture object for each potential ID with 'cap = cv2.VideoCapture(i)'.
-    # If 'cap' is None or not 'cap.isOpened()', it indicates the camera ID is not available.
     parser.add_argument(
         '--frameWidth',
         help='Width of frame to capture from camera.',
